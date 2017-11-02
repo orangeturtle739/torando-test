@@ -23,9 +23,12 @@ def subprocess_handler(request_handler, to_run):
         yield request_handler.flush()
 
 class FooHandler(tornado.web.RequestHandler):
+    def initialize(self, start):
+        self.start = start
+
     @tornado.gen.coroutine
     def get(self):
-        foo = 0
+        foo = self.start
         while True:
             foo += 1
             self.write(str(foo)+'<br>')
@@ -45,7 +48,7 @@ class DragonHandler(tornado.web.RequestHandler):
 if __name__ == '__main__':
     application = tornado.web.Application([
         (r'/', MainHandler),
-        (r'/foo', FooHandler),
+        (r'/foo', FooHandler, dict(start=2)),
         (r'/dragon', DragonHandler),
         (r'/vader', VaderHandler)
     ])
